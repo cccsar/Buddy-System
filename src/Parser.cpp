@@ -1,9 +1,8 @@
-#include "parser.hpp"
+#include "Parser.hpp"
 #include <iostream>
 
-using namespace std; 
 
-bool isInt (const string & ss) 
+bool isInt (const std::string & ss) 
 { 
 	bool chk = true ;
 	for (auto character : ss)  
@@ -13,13 +12,13 @@ bool isInt (const string & ss)
 }
 
 
-void words(vector<string> &wd, string &ss) 
+void words(std::vector<std::string> &wd, std::string &ss) 
 {  
-	int  curr; 
+	size_t  curr; 
 
-	string separator = " "; 
+	std::string separator = " "; 
 
-	while ( (curr = ss.find( separator ) ) != string::npos ) 
+	while ( (curr = ss.find( separator ) ) != std::string::npos ) 
 	{
 
 		if ( curr == 0 ) 
@@ -34,9 +33,9 @@ void words(vector<string> &wd, string &ss)
 } 
 
 
-bool parse_input(string &ss, simulator &sim) 
+bool parse_input(std::string &ss, Simulator &sim) 
 { 
-	vector<string> wd; 
+	std::vector<std::string> wd; 
 
 	words(wd, ss) ; 
 
@@ -48,13 +47,13 @@ bool parse_input(string &ss, simulator &sim)
 			int errn = sim.insert( wd[1], stoi ( wd[2] ) )  ; 
 
 			switch (errn) { 
-				case ERRNAME : 
+				case ERR_NAME : 
 					printf("El nombre proporcionado ya tiene memoria asignada\n"); 
 					break ;
-				case ERRSIZE : 
+				case ERR_SIZE : 
 					printf("Memoria insufciente\n"); 
 					break; 
-				case ERRMINSIZE : 
+				case ERR_MINSIZE : 
 					printf("Solicito una cantidad invalida de memoria. Debe ser mayor a 0\n"); 
 			}
 					

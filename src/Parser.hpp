@@ -2,17 +2,15 @@
 #include<string> 
 #include<string> 
 
-#include "simulator.hpp"
-
-using namespace std; 
+#include "Simulator.hpp"
 
 #define RESERVAR "RESERVAR"
 #define LIBERAR "LIBERAR"
 #define MOSTRAR "MOSTRAR"
 #define SALIR "SALIR"
 
-#ifndef __PARSER_HELPER
-#define __PARSER_HELPER
+#ifndef PARSER_HPP
+#define PARSER_HPP
 
 /// @brief Checks if a string of characters is an integer.
 bool isInt (const std::string & ss); 
@@ -22,6 +20,6 @@ void words(std::vector<std::string> &wd, std::string &ss);
 
 /// @brief Given a string and a simulator, parses the string and acts on behalf
 /// of the parsed request.
-bool parse_input(string &ss, simulator &sim) ; 
+bool parse_input(std::string &ss, Simulator &sim) ; 
 
 #endif

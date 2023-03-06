@@ -1,43 +1,20 @@
 #include<stdio.h> 
 #include<iostream> 
 
-#include "parser.hpp"
-#include "simulator.hpp"
-
-#define INTRO "Simulador de manejo de memoria"
-#define DIALOG "Que deseas hacer?: \n * RESERVAR <nombre> <cantidad>\n * LIBERAR <nombre>\n * MOSTRAR \n * SALIR\n"
-
+#include "Client.hpp"
 
 int main(int argc, char **argv) 
 { 
-	int mmax  ; 
-	bool chk; 
-	string line; 
-
-	if ( argc < 1) 
+	if ( argc <= 1) 
 	{ 
-		printf("Es necesario 1 argumento que represente la memoria total. Saliendo.\n"); 
+		std::cerr<<RED<<"Error:"<<CYAN;		
+		std::cerr<<" Es necesario 1 argumento que represente la memoria total. Saliendo.\n"; 
+		std::cerr<<RESET;
 		exit(-1);
 	}
 
-	mmax = atoi ( argv[1] ) ; 
-	simulator sim ( mmax ) ; 
+	Client API(argv[1]);
+	
+	API.run();
 
-
-	printf("%s\n",INTRO); 
-
-	while ( true ) 
-	{
-		chk = false; 
-		
-		printf(DIALOG); 
-
-		printf("Siguiente eleccion: "); 
-		getline(cin,line); 
-
-		chk = parse_input(line, sim) ; 
-
-		if ( !chk ) 
-			printf("Opcion no reconocida. Ingrese una opcion correcta\n"); 
-	} 
 }

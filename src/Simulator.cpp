@@ -1,14 +1,16 @@
 #include <iostream> 
 
-#include "simulator.hpp"
+#include "Simulator.hpp"
 
+Simulator::Simulator()
+{
+	mem.resize(1);	
+}
 
-simulator::simulator( int mmax ) 
+Simulator::Simulator( int mmax ) 
 {  
 	mem.resize( mmax ) ; 
-
-	for(int i=0 ;i<mmax ; ++i)
-		mem[i] = true; 
+	std::fill(mem.begin(), mem.end(), true);
 
 	size = mmax; 
 
@@ -16,22 +18,21 @@ simulator::simulator( int mmax )
 }
 
 
-void simulator :: fill_segment ( int ind, int ub , int el) 
+void Simulator::fill_segment ( int ind, int ub , int el) 
 {
-	for(int i=ind ; i<ub; i++) 
-		mem[i] = el ;
+	std::fill(mem.begin() + ind, mem.begin() + ub, el);
 }
 
 
-int simulator :: best_fit_size (int el) 
+int Simulator::best_fit_size (int el) const 
 { 
 	int cnt , chk;
-
 
 	cnt = chk = 0 ;
 
 	// find index of highest order bit to compute roof of logarithm 
-	while ( el != 0 )  {
+	while ( el != 0 )  
+	{
 		if ( (el & 1) == 1 ) 
 			chk +=1 ;
 		el >>= 1; 
@@ -44,7 +45,7 @@ int simulator :: best_fit_size (int el)
 } 
 
 
-void simulator :: reserve( string name, int request, int ind) 
+void Simulator::reserve( std::string name, int request, int ind) 
 { 
 	int sz = best_fit_size( request ) ; 
 	int n_sz = free_mem[ind] - sz ; 
@@ -55,7 +56,7 @@ void simulator :: reserve( string name, int request, int ind)
 	// Update mapping with name, start position and size
 	names[name] = { ind, request } ; 
 
-	// insert lower bound for further checking
+	// Insert lower bound for further checking
 	bounds.insert( ind ) ; 
 
 	// Update state of free blocks
@@ -64,7 +65,7 @@ void simulator :: reserve( string name, int request, int ind)
 }
 
 
-int simulator :: find_best_fit(int request) 
+int Simulator::find_best_fit(int request) 
 { 
 	int step = best_fit_size (request) ; 
 	int i; 
@@ -72,10 +73,12 @@ int simulator :: find_best_fit(int request)
 	/* For each multiple of best fit within mmax constraint, check with *bounds* set that
 	 * there's available space for allocation. If so, return index. 
 	 */
-	for (i=0; i<size; i+= step ) { 
+	for (i=0; i<size; i+= step ) 
+	{ 
 		auto it = bounds.upper_bound(i); 
 
-		if ( mem[i] && (it == bounds.end() || *it > i + request - 1) && i + request - 1 < size )
+		if ( mem[i] && (it == bounds.end() || *it > i + request - 1) 
+			&& i + request - 1 < size )
 			return i ; 
 	} 
 
@@ -83,15 +86,15 @@ int simulator :: find_best_fit(int request)
 }
 
 
-int simulator :: insert ( string name, int request)
+STATUS Simulator::insert ( std::string name, int request)
 { 
 	int fit; 
 
 	if (request <= 0) 
-		return ERRMINSIZE; 
+		return ERR_MINSIZE; 
 
 	if (names.count(name) > 0) 
-		return ERRNAME; 
+		return ERR_NAME; 
 
 	fit = find_best_fit(request); 
 
@@ -99,50 +102,52 @@ int simulator :: insert ( string name, int request)
 	{ 
 		reserve(name, request, fit) ;
 
-		return 1; 
+		return SUCCESS; 
 	}
 
-
-	return ERRSIZE; 
+	return ERR_SIZE; 
 }
 
 
-void simulator :: display_memory() 
+STATUS Simulator::display_memory() 
 { 
 
-	printf("\nEstado de la memoria:\n"); 
+	std::cout<<"\nEstado de la memoria:\n"; 
 
 	for(auto el : mem) 
-		printf("%d",(int)el) ; 
-
-	printf("\n"); 
+	{
+		std::cout<<el;
+	}
+	std::cout<<'\n';
 
 	if ( names.size() > 0)  
 	{
-		printf("\nEtiquetas:\n"); 
+		std::cout<<"\nEtiquetas:\n"; 
 
 		for(auto el : names)
-			cout<<"id: "<<el.first<<endl<<"\t* posicion de memoria: "<<el.second.first
+			std::cout<<"id: "<<el.first<<std::endl<<"\t* posicion de memoria: "<<el.second.first
 				<<" * espacio abarcado: "<<el.second.second
-				<<" * espacio ocupado: "<<best_fit_size( el.second.second )<<endl ;
+				<<" * espacio ocupado: "<<best_fit_size( el.second.second )<<std::endl ;
 	}
 
 	if ( free_mem.size() > 0 ) 
 	{ 
-		printf("\nBloques de memoria libre:\n"); 
+		std::cout<<"\nBloques de memoria libre:\n"; 
 
 		for(auto el : free_mem)
-			printf("\t* Hay un bloque de tamaño %d en la posicion %d\n", el.second, el.first);
+			std::cout<<"\t* Hay un bloque de tamaño "<<el.second<<" en la posicion "<<el.first<<'\n';
 
-		printf("\n"); 
+		std::cout<<'\n'; 
 	}
+
+	return SUCCESS;
 }
 
 
-bool simulator :: erase(string name) 
+STATUS Simulator::erase(std::string name) 
 { 
 	if (names.count(name) == 0) 
-		return false; 
+		return ERR_INVLABEL; 
 	int ub, bf; 
 
 	auto pp = names[name];  
@@ -156,19 +161,19 @@ bool simulator :: erase(string name)
 	names.erase( name ); 					// erase from map 
 	merge_blocks( pp.first, bf );   		// merge free buddies
 
-	return true; 
+	return SUCCESS; 
 }
 
 
-pair<bool,int> simulator :: buddy (int pos, int size) 
+std::pair<bool,int> Simulator::buddy (int pos, int size) 
 { 
 	if ( (pos/size) % 2 == 0 ) 
-		return { false,  pos + size } ;
-	return { true, pos - size } ; 
+		return std::make_pair(false,  pos + size) ;
+	return std::make_pair(true, pos - size) ; 
 }
 
 
-void simulator :: create_blocks(int pos, int sz, bool top_down)
+void Simulator::create_blocks(int pos, int sz, bool top_down)
 {
 	int ref = (top_down)? sz : pos;
 	int dum = 1; 
@@ -181,7 +186,7 @@ void simulator :: create_blocks(int pos, int sz, bool top_down)
 			if ( top_down ) 
 			{  
 				ref -= dum; 
-				free_mem[ ref ] = dum;  
+				free_mem[ ref ] = dum; 
 			}
 			// create blocks from smallest one to biggest
 			else { 
@@ -191,11 +196,10 @@ void simulator :: create_blocks(int pos, int sz, bool top_down)
 		}
 		dum <<=1 ;
 	}
-
 }	
 
 
-void simulator :: merge_blocks(int pos, int sz) 
+void Simulator::merge_blocks(int pos, int sz) 
 { 
 	auto pal = buddy (pos, sz) ; 
 	int current_sz = 2 * sz; 	

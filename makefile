@@ -7,11 +7,12 @@ TARGET_DEBUG := buddy-debug
 SRCS := $(wildcard src/*.cpp)
 # $(patsubst %.cpp,%.o,$(SRCS)): substitute all ".cpp" file name strings to ".o" file name strings
 OBJS := $(patsubst src/%.cpp,bin/%.o,$(SRCS))
+
 OBJS_DEBUG := $(patsubst src/%.cpp,debug/%.o,$(SRCS))
 
 all: $(TARGET)
 
-$(TARGET): $(OBJS)
+$(TARGET): $(OBJS) 
 	$(CC) -o $@ $^ $(CFLAGS) -O3
 
 bin/%.o: src/%.cpp
@@ -26,7 +27,7 @@ clean:
 
 debug: $(TARGET_DEBUG)
 
-$(TARGET_DEBUG): $(OBJS_DEBUG)
+$(TARGET_DEBUG): $(OBJS_DEBUG) 
 	$(CC) -o $@ $^ $(CFLAGS) -g -D DEBUG
 
 debug/%.o: src/%.cpp
