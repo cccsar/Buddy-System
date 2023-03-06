@@ -8,12 +8,14 @@
 #define DIALOG "Que deseas hacer?: \n * RESERVAR <nombre> <cantidad>\n * LIBERAR <nombre>\n * MOSTRAR \n * SALIR\n"
 
 
-int main(int argc, char **argv) { 
+int main(int argc, char **argv) 
+{ 
 	int mmax  ; 
 	bool chk; 
 	string line; 
 
-	if ( argc < 1) { 
+	if ( argc < 1) 
+	{ 
 		printf("Es necesario 1 argumento que represente la memoria total. Saliendo.\n"); 
 		exit(-1);
 	}
@@ -24,7 +26,8 @@ int main(int argc, char **argv) {
 
 	printf("%s\n",INTRO); 
 
-	while ( true ) {
+	while ( true ) 
+	{
 		chk = false; 
 		
 		printf(DIALOG); 

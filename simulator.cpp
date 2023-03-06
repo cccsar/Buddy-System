@@ -3,8 +3,8 @@
 #include "simulator.hpp"
 
 
-simulator::simulator( int mmax ) {  
-
+simulator::simulator( int mmax ) 
+{  
 	mem.resize( mmax ) ; 
 
 	for(int i=0 ;i<mmax ; ++i)
@@ -16,14 +16,15 @@ simulator::simulator( int mmax ) {
 }
 
 
-void simulator :: fill_segment ( int ind, int ub , int el) {
-
+void simulator :: fill_segment ( int ind, int ub , int el) 
+{
 	for(int i=ind ; i<ub; i++) 
 		mem[i] = el ;
 }
 
 
-int simulator :: best_fit_size (int el) { 
+int simulator :: best_fit_size (int el) 
+{ 
 	int cnt , chk;
 
 
@@ -43,7 +44,8 @@ int simulator :: best_fit_size (int el) {
 } 
 
 
-void simulator :: reserve( string name, int request, int ind) { 
+void simulator :: reserve( string name, int request, int ind) 
+{ 
 	int sz = best_fit_size( request ) ; 
 	int n_sz = free_mem[ind] - sz ; 
 
@@ -62,7 +64,8 @@ void simulator :: reserve( string name, int request, int ind) {
 }
 
 
-int simulator :: find_best_fit(int request) { 
+int simulator :: find_best_fit(int request) 
+{ 
 	int step = best_fit_size (request) ; 
 	int i; 
 	
@@ -80,7 +83,8 @@ int simulator :: find_best_fit(int request) {
 }
 
 
-int simulator :: insert ( string name, int request){ 
+int simulator :: insert ( string name, int request)
+{ 
 	int fit; 
 
 	if (request <= 0) 
@@ -91,7 +95,8 @@ int simulator :: insert ( string name, int request){
 
 	fit = find_best_fit(request); 
 
-	if ( fit != -1)  { 
+	if (fit != -1)  
+	{ 
 		reserve(name, request, fit) ;
 
 		return 1; 
@@ -102,7 +107,8 @@ int simulator :: insert ( string name, int request){
 }
 
 
-void simulator :: display_memory() { 
+void simulator :: display_memory() 
+{ 
 
 	printf("\nEstado de la memoria:\n"); 
 
@@ -111,7 +117,8 @@ void simulator :: display_memory() {
 
 	printf("\n"); 
 
-	if ( names.size() > 0)  {
+	if ( names.size() > 0)  
+	{
 		printf("\nEtiquetas:\n"); 
 
 		for(auto el : names)
@@ -120,7 +127,8 @@ void simulator :: display_memory() {
 				<<" * espacio ocupado: "<<best_fit_size( el.second.second )<<endl ;
 	}
 
-	if ( free_mem.size() > 0 ) { 
+	if ( free_mem.size() > 0 ) 
+	{ 
 		printf("\nBloques de memoria libre:\n"); 
 
 		for(auto el : free_mem)
@@ -131,7 +139,8 @@ void simulator :: display_memory() {
 }
 
 
-bool simulator :: erase(string name) { 
+bool simulator :: erase(string name) 
+{ 
 	if (names.count(name) == 0) 
 		return false; 
 	int ub, bf; 
@@ -143,29 +152,34 @@ bool simulator :: erase(string name) {
 	ub = pp.first + bf ; 
 
 	fill_segment( pp.first, ub, true ) ; 	// erase memory segment
-	bounds.erase( pp.first ) ;  		// erase from set
-	names.erase( name ); 			// erase from map 
-	merge_blocks( pp.first, bf );   	// merge free buddies
+	bounds.erase( pp.first ) ;  			// erase from set
+	names.erase( name ); 					// erase from map 
+	merge_blocks( pp.first, bf );   		// merge free buddies
 
 	return true; 
 }
 
 
-pair<bool,int> simulator :: buddy (int pos, int size) { 
+pair<bool,int> simulator :: buddy (int pos, int size) 
+{ 
 	if ( (pos/size) % 2 == 0 ) 
 		return { false,  pos + size } ;
 	return { true, pos - size } ; 
 }
 
 
-void simulator :: create_blocks(int pos, int sz, bool top_down){
+void simulator :: create_blocks(int pos, int sz, bool top_down)
+{
 	int ref = (top_down)? sz : pos;
 	int dum = 1; 
 
-	while ( dum <= sz ) { 
-		if ( (dum & ref) != 0 ) { 
+	while ( dum <= sz ) 
+	{ 
+		if ( (dum & ref) != 0 ) 
+		{ 
 			// create blocks from biggest one to smallest
-			if ( top_down ) {  
+			if ( top_down ) 
+			{  
 				ref -= dum; 
 				free_mem[ ref ] = dum;  
 			}
@@ -181,13 +195,15 @@ void simulator :: create_blocks(int pos, int sz, bool top_down){
 }	
 
 
-void simulator :: merge_blocks(int pos, int sz) { 
+void simulator :: merge_blocks(int pos, int sz) 
+{ 
 	auto pal = buddy (pos, sz) ; 
 	int current_sz = 2 * sz; 	
 	int last = pos; 
 
 	// While there's a buddy block with free memory, erase it
-	while ( mem[pal.second] && pal.second + current_sz < size) { 
+	while ( mem[pal.second] && pal.second + current_sz < size) 
+	{ 
 		free_mem.erase(pal.second); 
 
 		last = pal.second - ((pal.first )? 0 : current_sz/2) ;

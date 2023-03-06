@@ -14,20 +14,14 @@ using namespace std;
 #ifndef __PARSER_HELPER
 #define __PARSER_HELPER
 
-/*
- * Checks if a string of characters is an integer.
- */
+/// @brief Checks if a string of characters is an integer.
 bool isInt (const std::string & ss); 
 
-/* 
- * Breaks a string terminated on '\n' into a vector of space separated words.
- */
+/// @brief Breaks a string terminated on '\n' into a vector of space separated words.
 void words(std::vector<std::string> &wd, std::string &ss); 
 
-/*
- * Given a string and a simulator, parses the string and acts on behalf
- * of the parsed request.
- */
-
+/// @brief Given a string and a simulator, parses the string and acts on behalf
+/// of the parsed request.
 bool parse_input(string &ss, simulator &sim) ; 
+
 #endif
